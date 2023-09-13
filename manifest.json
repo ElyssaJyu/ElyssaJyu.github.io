@@ -15,7 +15,7 @@
     "icons": [
         {
             "src": "/hand.png",
-            "sizes": "512x512"
+            "sizes": "150x150"
         }
     ],
     "edge_side_panel": {

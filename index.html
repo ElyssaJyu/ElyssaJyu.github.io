@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'http://10.4.207.7:8080/get_history';"> -->
     <meta name="Portrait" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
     <title>My Browsing Portrait</title>
@@ -12,29 +14,36 @@
             margin: 0;
             padding: 0;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             background-color: #fff;
         }
-        .header, .section {
+
+        .header,
+        .section {
             padding: 20px;
             margin-bottom: 20px;
             border: 1px solid #ddd;
         }
+
         .header {
             background-color: #4476c6;
             color: #fff;
             text-align: center;
         }
+
         .section img {
             max-width: 100%;
         }
+
         .section h2 {
             border-bottom: 2px solid #333;
             padding-bottom: 10px;
         }
+
         .section table {
             width: 100%;
             border-collapse: collapse;
@@ -42,10 +51,10 @@
             border: 1px solid black;
         }
 
-        .section table th, 
+        .section table th,
         .section table td {
             border: 1px solid black;
-            padding: 8px; 
+            padding: 8px;
         }
 
         .footer {
@@ -57,53 +66,55 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>Mo Fish</h1>
-        <p>
-            Hi,"profile name"<br/>
-            A look back at the highlights of the week.
-        </p>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Mo Fish</h1>
+            <p>
+                Hi,"profile name"<br />
+                A look back at the highlights of the week.
+            </p>
+        </div>
 
-    <div class="section">
-        <h2>Your Digital DNA</h2>
-        <img src="User-Portrait.png" alt="Portrait Highlights">
-        <p></p>
-    </div>
+        <div class="section">
+            <h2>Your Digital DNA</h2>
+            <img src="User-Portrait.png" alt="Portrait Highlights">
+            <p></p>
+        </div>
 
-    <div class="section">
-        <h2>Brosing Habits</h2>
-    </div>
+        <div class="section">
+            <h2>Brosing Habits</h2>
+        </div>
 
-    <div class="section">
-        <h2>Web Wanderings</h2>
-        <table id="historyTable">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>URL</th>
-                    <th>Visit Count</th>
-                    <th>Last Visit Time</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        
-    </div>
+        <div class="section">
+            <h2>Web Wanderings</h2>
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>URL</th>
+                        <th>Visit Count</th>
+                        <th>Last Visit Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
 
-    <div class="footer">
-        <p>Your big fish must be somewhere!</p>
+        </div>
+
+        <div class="footer">
+            <p>Your big fish must be somewhere!</p>
+        </div>
     </div>
-</div>
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 <script>
-    if('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' });
     }
 </script>
+
 </html>

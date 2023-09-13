@@ -2,9 +2,8 @@
 // {
 //     title:[url, visit_count, last_visit_time],
 // }
-//import fetch from 'node-fetch';
 
-fetch(' ', {mode: 'no-cors'})
+fetch('http site')
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok.');
@@ -15,7 +14,7 @@ fetch(' ', {mode: 'no-cors'})
         //console.log(data);
         const tableBody = document.querySelector('#historyTable tbody');
 
-        data.forEach(title=>{
+        data.forEach(title => {
             //console.log(title);
             let row = document.createElement('tr');
             let titleCell = document.createElement('td');
@@ -26,7 +25,7 @@ fetch(' ', {mode: 'no-cors'})
             urlCell.textContent = data[title][0];
             row.appendChild(urlCell);
 
-            let visitCountCell = document.createElement('td'); 
+            let visitCountCell = document.createElement('td');
             visitCountCell.textContent = data[title][1];
             row.appendChild(visitCountCell);
 
