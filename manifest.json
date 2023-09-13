@@ -1,0 +1,24 @@
+{
+    "lang": "en-us",
+    "name": " My Browsing Portrait",
+    "short_name": "Browser Portrait",
+    "description": "Analyze user's browsing history and generate a portrait of the user.",
+    "start_url": "./",
+    "scope": "./",
+    "background_color": "#2f3d58",
+    "theme_color": "#2f3d58",
+    "orientation": "portrait",
+    "display": "standalone",
+    "display_override": [
+        "window-controls-overlay"
+    ],
+    "icons": [
+        {
+            "src": "/hand.png",
+            "sizes": "512x512"
+        }
+    ],
+    "edge_side_panel": {
+        "preferred_width": 480
+    }
+}
