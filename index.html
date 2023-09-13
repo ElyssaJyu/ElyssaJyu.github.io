@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'http://10.4.207.7:8080/get_history';"> -->
     <meta name="Portrait" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/manifest.json">
     <title>My Browsing Portrait</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,7 +74,7 @@
             <h1>Mo Fish</h1>
             <p>
                 Hi,"profile name"<br />
-                A look back at the highlights of the week.
+                A look back at the highlights of the last 7 days.
             </p>
         </div>
 
@@ -85,11 +85,11 @@
         </div>
 
         <div class="section">
-            <h2>Brosing Habits</h2>
-        </div>
-
-        <div class="section">
             <h2>Web Wanderings</h2>
+            <p id="wanderingSum">Over the past 7 days, the top 3 websites you visited the most are [<span
+                    id="websites"></span>],
+                with an average stay duration of [<span id="duration"></span>]. </p>
+            <br />
             <table id="historyTable">
                 <thead>
                     <tr>
@@ -102,7 +102,8 @@
                 <tbody>
                 </tbody>
             </table>
-
+            <br />
+            <canvas id="PieChart"></canvas>
         </div>
 
         <div class="footer">
