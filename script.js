@@ -118,8 +118,80 @@ function getRandomColor() {
     return color;
 }
 
+function DrawPortraitByQuickChart(data) {
+    data = 'baidu baidu bing bing bing bing bing google'
+    fetch("https://quickchart.io/wordcloud", {
+    method: "POST",
+    body: JSON.stringify({
+            format: 'svg',
+            width: 1000,
+            height: 1000,
+            fontScale: 150,
+            scale: 'linear',
+            removeStopwords: true,
+            minWordLength: 4,
+            rotation: 60,
+            backgroundColor: 'rgb(25, 215, 155)',
+            loadGoogleFonts: 'Oswald',
+            fontFamily: 'Oswald',
+            text: data,
+    }),
+    headers: {
+        "Content-type": "application/json; charset=UTF-8"
+    }
+    }).then((response) => response.blob())
+    .then((blob) => {
+    const imageUrl = URL.createObjectURL(blob);
+    const imageElement = document.createElement("img");
+    imageElement.src = imageUrl;
+    const container = document.getElementById("portrait");
+    container.appendChild(imageElement);
+    })
+    .catch((error) => console.error(error));
+}
+
+function DrawPortraitByD3(data) {
+    data = [
+        "Hello", "world", "normally", "Hello", "you", "want", "more", "words",
+        "than", "this"]
+    var layout = d3.layout.cloud()
+    .size([1000, 1000])
+    .words(data.map(function(d) {
+        return {text: d, size: 10 + Math.random() * 90};
+    }))
+    .text(function(d) {return d.text+'a';})
+    .padding(5)
+    .rotate(function() { return (~~(Math.random() * 6) - 3) * 30; })
+    .font("Impact")
+    .fontSize(function(d) { return d.size; })
+    .on("end", draw);
+    
+    layout.start();
+    
+    function draw(words) {
+      d3.select("#portrait").append("svg")
+          .attr("width", layout.size()[0])
+          .attr("height", layout.size()[1])
+        .append("g")
+          .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+        .selectAll("text")
+          .data(words)
+        .enter().append("text")
+          .style("font-size", function(d) { return d.size + "px"; })
+          .style("font-family", "Impact")
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d) {
+            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+          })
+          .text(function(d) { return d.text; });
+    }
+    
+}
+
 async function main() {
     const data = await getLast7DaysData();
+    DrawPortraitByD3(data);
+    DrawPortraitByQuickChart(data);
     createTable(data);
     GetTopThreeWebsites(data);
     DrawPieChart(data);
