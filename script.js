@@ -23,15 +23,14 @@ async function getLast7DaysData(data) {
         });
         console.log(last7DaysData);
 
-        return last7DaysData;
+        createTable(last7DaysData);
+        GetTopThreeWebsites(last7DaysData);
+        DrawPieChart(last7DaysData);
 
     } catch (error) {
         console.error('Error:', error);
     }
 
-    createTable(data);
-    GetTopThreeWebsites(data);
-    DrawPieChart(data);
 }
 
 function createTable(data) {
