@@ -65,8 +65,8 @@ function GetTopThreeWebsites(data) {
     const sortedData = Object.entries(data).sort((a, b) => b[1][2] - a[1][2]);
     const topThree = sortedData.slice(0, 3).map(([id, entry]) => {
         return {
-            name: entry[0],
-            clickCount: entry[2]
+            name: entry[1],
+            clickCount: entry[3]
         };
     });
     console.log(topThree);
@@ -81,9 +81,9 @@ function GetTopThreeWebsites(data) {
 
 function DrawPieChart(data) {
     // Pie chart
-    let LabelsArray = Object.values(data).map(item => item[0]);
+    let LabelsArray = Object.values(data).map(item => item[1][0]);
     console.log(LabelsArray);
-    let visitCounts = Object.values(data).map(item => parseInt(item[2]));
+    let visitCounts = Object.values(data).map(item => parseInt(item[1][2]));
 
     const dataLength = data.length;
     const backgroundColors = [];
