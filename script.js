@@ -3,15 +3,9 @@
 //     title:[url, visit_count, last_visit_time],
 // }
 
-async function getLast7DaysData() {
-    try {
-        const response = await fetch("/mockdata.json");
-        if (!response.ok) {
-            throw new Error('Failed to fetch data from the server.');
-        }
-        const data = await response.json();
-        console.log(data);
 
+async function getLast7DaysData(data) {
+    try {
         // Get the date from 7 days ago
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -28,6 +22,10 @@ async function getLast7DaysData() {
     } catch (error) {
         console.error('Error:', error);
     }
+
+    createTable(data);
+    GetTopThreeWebsites(data);
+    DrawPieChart(data);
 }
 
 function createTable(data) {
@@ -119,10 +117,10 @@ function getRandomColor() {
 }
 
 async function main() {
-    const data = await getLast7DaysData();
-    createTable(data);
-    GetTopThreeWebsites(data);
-    DrawPieChart(data);
+    // const data = await getLast7DaysData();
+    chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data)=>getLast7DaysData(data));
+    
+ 
 }
 
 main();
