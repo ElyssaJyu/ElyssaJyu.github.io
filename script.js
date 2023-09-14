@@ -1,7 +1,12 @@
 //history data json structure
-// {
-//     title:[url, visit_count, last_visit_time],
-// }
+// "id": [
+//     "百度一下，你就知道",
+//     "
+// www.baidu.com"
+//     ,
+//     "1",
+//     "2023-9-14 12:27:20"
+// ],
 
 
 async function getLast7DaysData(data) {
@@ -12,9 +17,9 @@ async function getLast7DaysData(data) {
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
         // Filter the data to get only the records from the last 7 days
-        const last7DaysData = Object.entries(data).filter(([title, [url, visit_count, last_visit_time]]) => {
-            const visitDate = new Date(last_visit_time);
-            return visitDate >= sevenDaysAgo;
+        const last7DaysData = Object.entries(data).filter(([id, entry]) => {
+            const entryDate = new Date(entry[3]);
+            return entryDate >= sevenDaysAgo;
         });
         console.log(last7DaysData);
 
@@ -54,24 +59,31 @@ function createTable(data) {
     })
 }
 
-//Top 3 clicked websites and their total stay duration.
+//Top 3 clicked websites and their visits counts.
 function GetTopThreeWebsites(data) {
 
-    const sortedWebsites = Object.entries(data).sort((a, b) => b[1][1] - a[1][1]);
-    console.log(sortedWebsites);
-    const topThreeWebsites = sortedWebsites.slice(0, 3).map(item => item[0]).join(', ');
-    console.log(topThreeWebsites);
-    const topThreeWebsitesDuration = sortedWebsites.slice(0, 3).map(item => item[1][2]).join(', ');
-    console.log(topThreeWebsitesDuration);
-    document.getElementById('websites').textContent = topThreeWebsites;
-    //TODO: calculate total stay duration over the last 7 days, currently it is visits count.
-    document.getElementById('duration').textContent = topThreeWebsitesDuration;
+    const sortedData = Object.entries(data).sort((a, b) => b[1][2] - a[1][2]);
+    const topThree = sortedData.slice(0, 3).map(([id, entry]) => {
+        return {
+            name: entry[0],
+            clickCount: entry[2]
+        };
+    });
+    console.log(topThree);
+
+    const websiteNames = topThree.map(entry => entry.name).join(', ');
+    const visitCounts = topThree.map(entry => entry.clickCount).join(', ');
+
+    document.getElementById('websites').textContent = websiteNames;
+    document.getElementById('visits').textContent = visitCounts;
+
 }
 
 function DrawPieChart(data) {
     // Pie chart
-    let LabelsArray = Object.keys(data);
-    let visitCounts = labels.map(label => data[label][1]);
+    let LabelsArray = Object.values(data).map(item => item[0]);
+    console.log(LabelsArray);
+    let visitCounts = Object.values(data).map(item => item[2]);
 
     const dataLength = data.length;
     const backgroundColors = [];
@@ -118,10 +130,7 @@ function getRandomColor() {
 }
 
 async function main() {
-    // const data = await getLast7DaysData();
-    chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data)=>getLast7DaysData(data));
-    
- 
+    chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
 }
 
 main();
