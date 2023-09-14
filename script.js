@@ -12,12 +12,13 @@
 async function getLast7DaysData(data) {
     try {
         console.log(data);
+        const jsonData = JSON.parse(data);
         // Get the date from 7 days ago
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
         // Filter the data to get only the records from the last 7 days
-        const last7DaysData = Object.entries(data).filter(([id, entry]) => {
+        const last7DaysData = Object.entries(jsonData).filter(([id, entry]) => {
             const entryDate = new Date(entry[3]);
             return entryDate >= sevenDaysAgo;
         });
@@ -39,19 +40,19 @@ function createTable(data) {
     data.forEach(([title, details]) => {
         let row = document.createElement('tr');
         let titleCell = document.createElement('td');
-        titleCell.textContent = title;
+        titleCell.textContent = details[0];
         row.appendChild(titleCell);
 
         let urlCell = document.createElement('td');
-        urlCell.textContent = details[0];
+        urlCell.textContent = details[1];
         row.appendChild(urlCell);
 
         let visitCountCell = document.createElement('td');
-        visitCountCell.textContent = details[1];
+        visitCountCell.textContent = details[2];
         row.appendChild(visitCountCell);
 
         let lastVisitTimeCell = document.createElement('td');
-        lastVisitTimeCell.textContent = details[2];
+        lastVisitTimeCell.textContent = details[3];
         row.appendChild(lastVisitTimeCell);
 
         tableBody.appendChild(row);
@@ -82,7 +83,7 @@ function DrawPieChart(data) {
     // Pie chart
     let LabelsArray = Object.values(data).map(item => item[0]);
     console.log(LabelsArray);
-    let visitCounts = Object.values(data).map(item => item[2]);
+    let visitCounts = Object.values(data).map(item => parseInt(item[2]));
 
     const dataLength = data.length;
     const backgroundColors = [];
