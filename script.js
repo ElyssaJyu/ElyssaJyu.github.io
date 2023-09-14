@@ -130,14 +130,14 @@ function DrawPortraitByQuickChart(data) {
     text = ''
     //data = 'baidu baidu bing bing bing bing bing google'
     Object.entries(data).forEach(([title, details]) => {
-        text = text + GetDomain(details[1]) + ' '
+        text = text + (GetDomain(details[1]) + ' ').repeat(details[2])
     })
     fetch("https://quickchart.io/wordcloud", {
     method: "POST",
     body: JSON.stringify({
-            format: 'svg',
-            width: 1000,
-            height: 1000,
+            format: 'png',
+            width: 800,
+            height: 800,
             fontScale: 150,
             scale: 'linear',
             removeStopwords: true,
@@ -164,29 +164,43 @@ function DrawPortraitByQuickChart(data) {
 
 function DrawPortraitByD3(data) {
     wordlist = []
+    var fill = d3.scaleOrdinal(d3.schemeCategory20);
     Object.entries(data).forEach(([title, details]) => {
         console.log(details[1])
-        wordlist.push({text:GetDomain(details[1]), size:50*details[2]})
+        wordlist.push({text:GetDomain(details[1]), size:details[2]})
     })
+    worddict = {}
+    wordlist.forEach(d => {
+        if(!worddict[d.text]) {
+            worddict[d.text] = parseInt(d.size)
+        } else {
+            worddict[d.text] += parseInt(d.size)
+        }
+    })
+    console.log(data)
+    console.log(worddict)
+    worddict = Object.entries(worddict).map(([text, size]) => ({text, size}))
     testdata = [
         "Hello", "world", "normally", "Hello", "you", "want", "more", "words",
         "than", "this"]
     var layout = d3.layout.cloud()
-    .size([1000, 1000])
-    .words(wordlist)
+    .size([760, 760])
+    .words(worddict)
     .text(function(d) {return d.text;})
     .padding(5)
     .rotate(function() { return (~~(Math.random() * 6) - 3) * 30; })
     .font("Impact")
-    .fontSize(function(d) { return d.size; })
+    .fontSize(function(d) { return Math.max(Math.sqrt(d.size)*20, 50) })
     .on("end", draw);
     
     layout.start();
-    
+
     function draw(words) {
       d3.select("#portrait").append("svg")
           .attr("width", layout.size()[0])
           .attr("height", layout.size()[1])
+          .style("background", "#66ccff")
+          //.attr("style", "outline: thin solid blue;") border
         .append("g")
           .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
         .selectAll("text")
@@ -194,6 +208,7 @@ function DrawPortraitByD3(data) {
         .enter().append("text")
           .style("font-size", function(d) { return d.size + "px"; })
           .style("font-family", "Impact")
+          .style("fill", function(d, i) { return fill(i); })
           .attr("text-anchor", "middle")
           .attr("transform", function(d) {
             return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
