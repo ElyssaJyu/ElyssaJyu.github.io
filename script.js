@@ -6,6 +6,7 @@
 
 async function getLast7DaysData(data) {
     try {
+        console.log(data);
         // Get the date from 7 days ago
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
