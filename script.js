@@ -118,8 +118,20 @@ function getRandomColor() {
     return color;
 }
 
+function GetDomain(url)
+{
+    return url.replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .replace(/\..*/, '');
+}
+
 function DrawPortraitByQuickChart(data) {
-    data = 'baidu baidu bing bing bing bing bing google'
+    console.log(data)
+    text = ''
+    //data = 'baidu baidu bing bing bing bing bing google'
+    Object.entries(data).forEach(([title, details]) => {
+        text = text + GetDomain(details[1]) + ' '
+    })
     fetch("https://quickchart.io/wordcloud", {
     method: "POST",
     body: JSON.stringify({
@@ -134,7 +146,7 @@ function DrawPortraitByQuickChart(data) {
             backgroundColor: 'rgb(25, 215, 155)',
             loadGoogleFonts: 'Oswald',
             fontFamily: 'Oswald',
-            text: data,
+            text: text,
     }),
     headers: {
         "Content-type": "application/json; charset=UTF-8"
@@ -151,15 +163,18 @@ function DrawPortraitByQuickChart(data) {
 }
 
 function DrawPortraitByD3(data) {
-    data = [
+    wordlist = []
+    Object.entries(data).forEach(([title, details]) => {
+        console.log(details[1])
+        wordlist.push({text:GetDomain(details[1]), size:50*details[2]})
+    })
+    testdata = [
         "Hello", "world", "normally", "Hello", "you", "want", "more", "words",
         "than", "this"]
     var layout = d3.layout.cloud()
     .size([1000, 1000])
-    .words(data.map(function(d) {
-        return {text: d, size: 10 + Math.random() * 90};
-    }))
-    .text(function(d) {return d.text+'a';})
+    .words(wordlist)
+    .text(function(d) {return d.text;})
     .padding(5)
     .rotate(function() { return (~~(Math.random() * 6) - 3) * 30; })
     .font("Impact")
@@ -189,7 +204,59 @@ function DrawPortraitByD3(data) {
 }
 
 async function main() {
-    const data = await getLast7DaysData();
+    var data = await getLast7DaysData();
+
+    data = {
+        "8": [
+            "My Browsing Portrait",
+            "elyssajyu.github.io",
+            "1",
+            "2023-9-14 14:43:8"
+        ],
+        "7": [
+            "百度一下，你就知道",
+            "www.baidu.com",
+            "1",
+            "2023-9-14 12:27:20"
+        ],
+        "5": [
+            "bing.com/ck/a?!&&p=dd3e7ff83d6630daJmltdHM9MTY5NDU2MzIwMCZpZ3VpZD0xMTQ2ODM5MC1kMmQ2LTY0NWItMWIyYS05MGVjZDMyYjY1OGUmaW5zaWQ9NTE5NQ&ptn=3&hsh=3&fclid=11468390-d2d6-645b-1b2a-90ecd32b658e&psq=baidu&u=a1aHR0cHM6Ly93d3cuYmFpZHUuY29tLw&ntb=1",
+            "www.bing.com",
+            "2",
+            "2023-9-14 12:27:20"
+        ],
+        "6": [
+            "",
+            "www.bing.com",
+            "1",
+            "2023-9-14 12:27:20"
+        ],
+        "4": [
+            "Squoosh",
+            "squoosh.app",
+            "40",
+            "2023-8-31 13:52:51"
+        ],
+        "3": [
+            "Squoosh",
+            "squoosh.app",
+            "1",
+            "2023-8-29 17:6:9"
+        ],
+        "1": [
+            "bing.com/ck/a?!&&p=b832585f0a961368JmltdHM9MTY5MzI2NzIwMCZpZ3VpZD0xMTQ2ODM5MC1kMmQ2LTY0NWItMWIyYS05MGVjZDMyYjY1OGUmaW5zaWQ9NTE4NQ&ptn=3&hsh=3&fclid=11468390-d2d6-645b-1b2a-90ecd32b658e&psq=squoosh&u=a1aHR0cHM6Ly9zcXVvb3NoLmFwcC8&ntb=1",
+            "www.bing.com",
+            "2",
+            "2023-8-29 17:6:8"
+        ],
+        "2": [
+            "",
+            "www.bing.com",
+            "1",
+            "2023-8-29 17:6:7"
+        ]
+    }
+
     DrawPortraitByD3(data);
     DrawPortraitByQuickChart(data);
     createTable(data);
