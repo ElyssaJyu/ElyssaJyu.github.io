@@ -23,7 +23,7 @@ async function getLast7DaysData(data) {
             return entryDate >= sevenDaysAgo;
         });
         console.log(last7DaysData);
-      
+
         DrawPortraitByD3(data);
         DrawPortraitByQuickChart(data);
         createTable(last7DaysData);
@@ -91,12 +91,6 @@ function GetTopThreeWebsites(data) {
 
 }
 
-function GetDomain(url) {
-    return url.replace(/^https?:\/\//, "")
-        .replace(/^www\./, "")
-        .replace(/\..*/, '');
-}
-
 function DrawBarChart(data) {
     // Bar chart
     let labelsArray = Object.values(data).map(item => GetDomain(item[1][1]));
@@ -148,11 +142,11 @@ function getRandomColor() {
     return color;
 }
 
-function GetDomain(url)
-{
+function GetDomain(url) {
+    console.log(url);
     return url.replace(/^https?:\/\//, "")
-    .replace(/^www\./, "")
-    .replace(/\..*/, '');
+        .replace(/^www\./, "")
+        .replace(/\..*/, '');
 }
 
 function DrawPortraitByQuickChart(data) {
@@ -163,8 +157,8 @@ function DrawPortraitByQuickChart(data) {
         text = text + (GetDomain(details[1]) + ' ').repeat(details[2])
     })
     fetch("https://quickchart.io/wordcloud", {
-    method: "POST",
-    body: JSON.stringify({
+        method: "POST",
+        body: JSON.stringify({
             format: 'png',
             width: 800,
             height: 800,
@@ -177,31 +171,33 @@ function DrawPortraitByQuickChart(data) {
             loadGoogleFonts: 'Oswald',
             fontFamily: 'Oswald',
             text: text,
-    }),
-    headers: {
-        "Content-type": "application/json; charset=UTF-8"
-    }
+        }),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
     }).then((response) => response.blob())
-    .then((blob) => {
-    const imageUrl = URL.createObjectURL(blob);
-    const imageElement = document.createElement("img");
-    imageElement.src = imageUrl;
-    const container = document.getElementById("portrait");
-    container.appendChild(imageElement);
-    })
-    .catch((error) => console.error(error));
+        .then((blob) => {
+            const imageUrl = URL.createObjectURL(blob);
+            const imageElement = document.createElement("img");
+            imageElement.src = imageUrl;
+            const container = document.getElementById("portrait");
+            container.appendChild(imageElement);
+        })
+        .catch((error) => console.error(error));
 }
 
 function DrawPortraitByD3(data) {
     wordlist = []
     var fill = d3.scaleOrdinal(d3.schemeCategory20);
+    console.log(data);
     Object.entries(data).forEach(([title, details]) => {
+        console.log(details);
         console.log(details[1])
-        wordlist.push({text:GetDomain(details[1]), size:details[2]})
+        wordlist.push({ text: GetDomain(details[1]), size: details[2] })
     })
     worddict = {}
     wordlist.forEach(d => {
-        if(!worddict[d.text]) {
+        if (!worddict[d.text]) {
             worddict[d.text] = parseInt(d.size)
         } else {
             worddict[d.text] += parseInt(d.size)
@@ -209,47 +205,46 @@ function DrawPortraitByD3(data) {
     })
     console.log(data)
     console.log(worddict)
-    worddict = Object.entries(worddict).map(([text, size]) => ({text, size}))
+    worddict = Object.entries(worddict).map(([text, size]) => ({ text, size }))
     testdata = [
         "Hello", "world", "normally", "Hello", "you", "want", "more", "words",
         "than", "this"]
     var layout = d3.layout.cloud()
-    .size([760, 760])
-    .words(worddict)
-    .text(function(d) {return d.text;})
-    .padding(5)
-    .rotate(function() { return (~~(Math.random() * 6) - 3) * 30; })
-    .font("Impact")
-    .fontSize(function(d) { return Math.max(Math.sqrt(d.size)*20, 50) })
-    .on("end", draw);
-    
+        .size([760, 760])
+        .words(worddict)
+        .text(function (d) { return d.text; })
+        .padding(5)
+        .rotate(function () { return (~~(Math.random() * 6) - 3) * 30; })
+        .font("Impact")
+        .fontSize(function (d) { return Math.max(Math.sqrt(d.size) * 20, 50) })
+        .on("end", draw);
+
     layout.start();
 
     function draw(words) {
-      d3.select("#portrait").append("svg")
-          .attr("width", layout.size()[0])
-          .attr("height", layout.size()[1])
-          .style("background", "#66ccff")
-          //.attr("style", "outline: thin solid blue;") border
-        .append("g")
-          .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-        .selectAll("text")
-          .data(words)
-        .enter().append("text")
-          .style("font-size", function(d) { return d.size + "px"; })
-          .style("font-family", "Impact")
-          .style("fill", function(d, i) { return fill(i); })
-          .attr("text-anchor", "middle")
-          .attr("transform", function(d) {
-            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-          })
-          .text(function(d) { return d.text; });
+        d3.select("#portrait").append("svg")
+            .attr("width", layout.size()[0])
+            .attr("height", layout.size()[1])
+            .style("background", "#66ccff")
+            //.attr("style", "outline: thin solid blue;") border
+            .append("g")
+            .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+            .selectAll("text")
+            .data(words)
+            .enter().append("text")
+            .style("font-size", function (d) { return d.size + "px"; })
+            .style("font-family", "Impact")
+            .style("fill", function (d, i) { return fill(i); })
+            .attr("text-anchor", "middle")
+            .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .text(function (d) { return d.text; });
     }
-    
+
 }
 
 async function main() {
-
     chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
 }
 
