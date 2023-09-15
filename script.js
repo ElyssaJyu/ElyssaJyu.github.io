@@ -119,7 +119,7 @@ function DrawBarChart(data) {
                 text: 'Website Visit Counts'
             },
             scales: {
-                yAxes: [{
+                y: [{
                     ticks: {
                         beginAtZero: true
                     }
