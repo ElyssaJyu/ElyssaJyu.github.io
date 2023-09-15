@@ -24,8 +24,8 @@ async function getLast7DaysData(data) {
         });
         console.log(last7DaysData);
 
-        DrawPortraitByD3(data);
-        DrawPortraitByQuickChart(data);
+        DrawPortraitByD3(last7DaysData);
+        DrawPortraitByQuickChart(last7DaysData);
         createTable(last7DaysData);
         GetTopThreeWebsites(last7DaysData);
         DrawBarChart(last7DaysData);
