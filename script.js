@@ -34,16 +34,16 @@ async function getLast7DaysData(data) {
 
 }
 
-function extractMainDomain(urlString) {
-    const match = urlString.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
-    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
-        const parts = match[2].split('.');
-        if (parts.length > 1) {
-            return parts[parts.length - 2];
-        }
-    }
-    return null;
-}
+// function extractMainDomain(urlString) {
+//     const match = urlString.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+//     if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+//         const parts = match[2].split('.');
+//         if (parts.length > 1) {
+//             return parts[parts.length - 2];
+//         }
+//     }
+//     return null;
+// }
 
 function createTable(data) {
     const tableBody = document.querySelector('#historyTable tbody');
@@ -51,7 +51,7 @@ function createTable(data) {
     data.forEach(([title, details]) => {
         let row = document.createElement('tr');
         let titleCell = document.createElement('td');
-        const domainName = extractMainDomain(details[1]);
+        const domainName = GetDomain(details[1]);
         titleCell.textContent = domainName;
         row.appendChild(titleCell);
 
@@ -77,7 +77,7 @@ function GetTopThreeWebsites(data) {
     const sortedData = Object.entries(data).sort((a, b) => b[1][2] - a[1][2]);
     const topThree = sortedData.slice(0, 3).map(([id, entry]) => {
         return {
-            name: extractMainDomain(entry[1]),
+            name: GetDomain(entry[1]),
             clickCount: entry[3]
         };
     });
@@ -91,9 +91,15 @@ function GetTopThreeWebsites(data) {
 
 }
 
+function GetDomain(url) {
+    return url.replace(/^https?:\/\//, "")
+        .replace(/^www\./, "")
+        .replace(/\..*/, '');
+}
+
 function DrawBarChart(data) {
     // Bar chart
-    let labelsArray = Object.values(data).map(item => extractMainDomain(item[1][1]));
+    let labelsArray = Object.values(data).map(item => GetDomain(item[1][1]));
     let visitCounts = Object.values(data).map(item => parseInt(item[1][2]));
 
     const backgroundColors = labelsArray.map(() => getRandomColor());
