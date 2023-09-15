@@ -76,18 +76,16 @@ function GetTopThreeWebsites(data) {
 
     const sortedData = Object.entries(data).sort((a, b) => b[1][2] - a[1][2]);
     const topThree = sortedData.slice(0, 3).map(([id, entry]) => {
+        console.log(entry[1]);
         return {
             name: GetDomain(entry[1]),
-            clickCount: entry[3]
         };
     });
     console.log(topThree);
 
     const websiteNames = topThree.map(entry => entry.name).join(', ');
-    const visitCounts = topThree.map(entry => entry.clickCount).join(', ');
 
     document.getElementById('websites').textContent = websiteNames;
-    //document.getElementById('visits').textContent = visitCounts;
 
 }
 
@@ -101,6 +99,8 @@ function DrawBarChart(data) {
     // Bar chart
     let labelsArray = Object.values(data).map(item => GetDomain(item[1][1]));
     let visitCounts = Object.values(data).map(item => parseInt(item[1][2]));
+    console.log(labelsArray);
+    console.log(visitCounts);
 
     const backgroundColors = labelsArray.map(() => getRandomColor());
 
@@ -136,7 +136,7 @@ function DrawBarChart(data) {
 }
 
 
-//randowm color generator for PieChart
+//randowm color generator for BarChart
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
