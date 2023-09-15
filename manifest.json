@@ -15,6 +15,10 @@
     "icons": [
         {
             "src": "/hand.png",
+            "sizes": "45x45"
+        },
+        {
+            "src": "/hand.png",
             "sizes": "150x150"
         }
     ],
