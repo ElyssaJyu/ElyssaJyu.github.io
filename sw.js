@@ -4,6 +4,8 @@ self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     cache.addAll([
+      'https://d3js.org/d3.v4.min.js',
+      '/node_modules/d3-cloud/build/d3.layout.cloud.js',
       '/',
       '/script.js',
       '/manifest.json',

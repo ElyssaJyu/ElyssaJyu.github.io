@@ -23,7 +23,9 @@ async function getLast7DaysData(data) {
             return entryDate >= sevenDaysAgo;
         });
         console.log(last7DaysData);
-
+      
+        DrawPortraitByD3(data);
+        DrawPortraitByQuickChart(data);
         createTable(last7DaysData);
         GetTopThreeWebsites(last7DaysData);
         DrawBarChart(last7DaysData);
@@ -146,7 +148,108 @@ function getRandomColor() {
     return color;
 }
 
+function GetDomain(url)
+{
+    return url.replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .replace(/\..*/, '');
+}
+
+function DrawPortraitByQuickChart(data) {
+    console.log(data)
+    text = ''
+    //data = 'baidu baidu bing bing bing bing bing google'
+    Object.entries(data).forEach(([title, details]) => {
+        text = text + (GetDomain(details[1]) + ' ').repeat(details[2])
+    })
+    fetch("https://quickchart.io/wordcloud", {
+    method: "POST",
+    body: JSON.stringify({
+            format: 'png',
+            width: 800,
+            height: 800,
+            fontScale: 150,
+            scale: 'linear',
+            removeStopwords: true,
+            minWordLength: 4,
+            rotation: 60,
+            backgroundColor: 'rgb(25, 215, 155)',
+            loadGoogleFonts: 'Oswald',
+            fontFamily: 'Oswald',
+            text: text,
+    }),
+    headers: {
+        "Content-type": "application/json; charset=UTF-8"
+    }
+    }).then((response) => response.blob())
+    .then((blob) => {
+    const imageUrl = URL.createObjectURL(blob);
+    const imageElement = document.createElement("img");
+    imageElement.src = imageUrl;
+    const container = document.getElementById("portrait");
+    container.appendChild(imageElement);
+    })
+    .catch((error) => console.error(error));
+}
+
+function DrawPortraitByD3(data) {
+    wordlist = []
+    var fill = d3.scaleOrdinal(d3.schemeCategory20);
+    Object.entries(data).forEach(([title, details]) => {
+        console.log(details[1])
+        wordlist.push({text:GetDomain(details[1]), size:details[2]})
+    })
+    worddict = {}
+    wordlist.forEach(d => {
+        if(!worddict[d.text]) {
+            worddict[d.text] = parseInt(d.size)
+        } else {
+            worddict[d.text] += parseInt(d.size)
+        }
+    })
+    console.log(data)
+    console.log(worddict)
+    worddict = Object.entries(worddict).map(([text, size]) => ({text, size}))
+    testdata = [
+        "Hello", "world", "normally", "Hello", "you", "want", "more", "words",
+        "than", "this"]
+    var layout = d3.layout.cloud()
+    .size([760, 760])
+    .words(worddict)
+    .text(function(d) {return d.text;})
+    .padding(5)
+    .rotate(function() { return (~~(Math.random() * 6) - 3) * 30; })
+    .font("Impact")
+    .fontSize(function(d) { return Math.max(Math.sqrt(d.size)*20, 50) })
+    .on("end", draw);
+    
+    layout.start();
+
+    function draw(words) {
+      d3.select("#portrait").append("svg")
+          .attr("width", layout.size()[0])
+          .attr("height", layout.size()[1])
+          .style("background", "#66ccff")
+          //.attr("style", "outline: thin solid blue;") border
+        .append("g")
+          .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+        .selectAll("text")
+          .data(words)
+        .enter().append("text")
+          .style("font-size", function(d) { return d.size + "px"; })
+          .style("font-family", "Impact")
+          .style("fill", function(d, i) { return fill(i); })
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d) {
+            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+          })
+          .text(function(d) { return d.text; });
+    }
+    
+}
+
 async function main() {
+
     chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
 }
 
