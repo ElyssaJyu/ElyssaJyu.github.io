@@ -193,7 +193,7 @@ function DrawPortraitByD3(data) {
     Object.entries(data).forEach(([title, details]) => {
         console.log(details);
         console.log(details[1])
-        wordlist.push({ text: GetDomain(details[1]), size: details[2] })
+        wordlist.push({ text: GetDomain(details[1][1]), size: details[1][2] })
     })
     worddict = {}
     wordlist.forEach(d => {
