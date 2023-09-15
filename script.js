@@ -1,34 +1,51 @@
 //history data json structure
-// {
-//     title:[url, visit_count, last_visit_time],
-// }
+// "id": [
+//     "百度一下，你就知道",
+//     "
+// www.baidu.com"
+//     ,
+//     "1",
+//     "2023-9-14 12:27:20"
+// ],
 
-async function getLast7DaysData() {
+
+async function getLast7DaysData(data) {
     try {
-        const response = await fetch("/mockdata.json");
-        if (!response.ok) {
-            throw new Error('Failed to fetch data from the server.');
-        }
-        const data = await response.json();
         console.log(data);
-
+        const jsonData = JSON.parse(data);
         // Get the date from 7 days ago
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
         // Filter the data to get only the records from the last 7 days
-        const last7DaysData = Object.entries(data).filter(([title, [url, visit_count, last_visit_time]]) => {
-            const visitDate = new Date(last_visit_time);
-            return visitDate >= sevenDaysAgo;
+        const last7DaysData = Object.entries(jsonData).filter(([id, entry]) => {
+            const entryDate = new Date(entry[3]);
+            return entryDate >= sevenDaysAgo;
         });
         console.log(last7DaysData);
-
-        return last7DaysData;
+      
+        DrawPortraitByD3(data);
+        DrawPortraitByQuickChart(data);
+        createTable(last7DaysData);
+        GetTopThreeWebsites(last7DaysData);
+        DrawBarChart(last7DaysData);
 
     } catch (error) {
         console.error('Error:', error);
     }
+
 }
+
+// function extractMainDomain(urlString) {
+//     const match = urlString.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+//     if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+//         const parts = match[2].split('.');
+//         if (parts.length > 1) {
+//             return parts[parts.length - 2];
+//         }
+//     }
+//     return null;
+// }
 
 function createTable(data) {
     const tableBody = document.querySelector('#historyTable tbody');
@@ -36,57 +53,66 @@ function createTable(data) {
     data.forEach(([title, details]) => {
         let row = document.createElement('tr');
         let titleCell = document.createElement('td');
-        titleCell.textContent = title;
+        const domainName = GetDomain(details[1]);
+        titleCell.textContent = domainName;
         row.appendChild(titleCell);
 
         let urlCell = document.createElement('td');
-        urlCell.textContent = details[0];
+        urlCell.textContent = details[1];
         row.appendChild(urlCell);
 
         let visitCountCell = document.createElement('td');
-        visitCountCell.textContent = details[1];
+        visitCountCell.textContent = details[2];
         row.appendChild(visitCountCell);
 
         let lastVisitTimeCell = document.createElement('td');
-        lastVisitTimeCell.textContent = details[2];
+        lastVisitTimeCell.textContent = details[3];
         row.appendChild(lastVisitTimeCell);
 
         tableBody.appendChild(row);
     })
 }
 
-//Top 3 clicked websites and their total stay duration.
+//Top 3 clicked websites and their visits counts.
 function GetTopThreeWebsites(data) {
 
-    const sortedWebsites = Object.entries(data).sort((a, b) => b[1][1] - a[1][1]);
-    console.log(sortedWebsites);
-    const topThreeWebsites = sortedWebsites.slice(0, 3).map(item => item[0]).join(', ');
-    console.log(topThreeWebsites);
-    const topThreeWebsitesDuration = sortedWebsites.slice(0, 3).map(item => item[1][2]).join(', ');
-    console.log(topThreeWebsitesDuration);
-    document.getElementById('websites').textContent = topThreeWebsites;
-    //TODO: calculate total stay duration over the last 7 days, currently it is visits count.
-    document.getElementById('duration').textContent = topThreeWebsitesDuration;
+    const sortedData = Object.entries(data).sort((a, b) => b[1][2] - a[1][2]);
+    const topThree = sortedData.slice(0, 3).map(([id, entry]) => {
+        console.log(entry[1]);
+        return {
+            name: GetDomain(entry[1]),
+        };
+    });
+    console.log(topThree);
+
+    const websiteNames = topThree.map(entry => entry.name).join(', ');
+
+    document.getElementById('websites').textContent = websiteNames;
+
 }
 
-function DrawPieChart(data) {
-    // Pie chart
-    let LabelsArray = Object.keys(data);
-    let visitCounts = labels.map(label => data[label][1]);
+function GetDomain(url) {
+    return url.replace(/^https?:\/\//, "")
+        .replace(/^www\./, "")
+        .replace(/\..*/, '');
+}
 
-    const dataLength = data.length;
-    const backgroundColors = [];
+function DrawBarChart(data) {
+    // Bar chart
+    let labelsArray = Object.values(data).map(item => GetDomain(item[1][1]));
+    let visitCounts = Object.values(data).map(item => parseInt(item[1][2]));
+    console.log(labelsArray);
+    console.log(visitCounts);
 
-    for (let i = 0; i < dataLength; i++) {
-        backgroundColors.push(getRandomColor());
-    }
+    const backgroundColors = labelsArray.map(() => getRandomColor());
 
-    const ctx = document.getElementById('PieChart').getContext('2d');
+    const ctx = document.getElementById('BarChart').getContext('2d');
     const chart = new Chart(ctx, {
-        type: 'pie',
+        type: 'bar',
         data: {
-            labels: LabelsArray,
+            labels: labelsArray,
             datasets: [{
+                label: 'Visit Counts',
                 data: visitCounts,
                 backgroundColor: backgroundColors
             }]
@@ -100,15 +126,19 @@ function DrawPieChart(data) {
                 display: true,
                 text: 'Website Visit Counts'
             },
-            animation: {
-                animateScale: true,
-                animateRotate: true
+            scales: {
+                y: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
             }
         }
     });
 }
 
-//randowm color generator for PieChart
+
+//randowm color generator for BarChart
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -219,64 +249,8 @@ function DrawPortraitByD3(data) {
 }
 
 async function main() {
-    var data = await getLast7DaysData();
 
-    data = {
-        "8": [
-            "My Browsing Portrait",
-            "elyssajyu.github.io",
-            "1",
-            "2023-9-14 14:43:8"
-        ],
-        "7": [
-            "百度一下，你就知道",
-            "www.baidu.com",
-            "1",
-            "2023-9-14 12:27:20"
-        ],
-        "5": [
-            "bing.com/ck/a?!&&p=dd3e7ff83d6630daJmltdHM9MTY5NDU2MzIwMCZpZ3VpZD0xMTQ2ODM5MC1kMmQ2LTY0NWItMWIyYS05MGVjZDMyYjY1OGUmaW5zaWQ9NTE5NQ&ptn=3&hsh=3&fclid=11468390-d2d6-645b-1b2a-90ecd32b658e&psq=baidu&u=a1aHR0cHM6Ly93d3cuYmFpZHUuY29tLw&ntb=1",
-            "www.bing.com",
-            "2",
-            "2023-9-14 12:27:20"
-        ],
-        "6": [
-            "",
-            "www.bing.com",
-            "1",
-            "2023-9-14 12:27:20"
-        ],
-        "4": [
-            "Squoosh",
-            "squoosh.app",
-            "40",
-            "2023-8-31 13:52:51"
-        ],
-        "3": [
-            "Squoosh",
-            "squoosh.app",
-            "1",
-            "2023-8-29 17:6:9"
-        ],
-        "1": [
-            "bing.com/ck/a?!&&p=b832585f0a961368JmltdHM9MTY5MzI2NzIwMCZpZ3VpZD0xMTQ2ODM5MC1kMmQ2LTY0NWItMWIyYS05MGVjZDMyYjY1OGUmaW5zaWQ9NTE4NQ&ptn=3&hsh=3&fclid=11468390-d2d6-645b-1b2a-90ecd32b658e&psq=squoosh&u=a1aHR0cHM6Ly9zcXVvb3NoLmFwcC8&ntb=1",
-            "www.bing.com",
-            "2",
-            "2023-8-29 17:6:8"
-        ],
-        "2": [
-            "",
-            "www.bing.com",
-            "1",
-            "2023-8-29 17:6:7"
-        ]
-    }
-
-    DrawPortraitByD3(data);
-    DrawPortraitByQuickChart(data);
-    createTable(data);
-    GetTopThreeWebsites(data);
-    DrawPieChart(data);
+    chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
 }
 
 main();
