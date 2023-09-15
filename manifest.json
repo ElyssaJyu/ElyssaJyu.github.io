@@ -16,10 +16,6 @@
         {
             "src": "/hand.png",
             "sizes": "45x45"
-        },
-        {
-            "src": "/hand.png",
-            "sizes": "150x150"
         }
     ],
     "edge_side_panel": {
