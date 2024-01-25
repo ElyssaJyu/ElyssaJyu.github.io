@@ -81,6 +81,7 @@ self.addEventListener("fetch", (event) => {
       } catch (e) {
         console.warn("service-worker::fetch > event.formData() failed: ", e);
       }
+      return fetch(event.request.url);
     })(),
   );
 });
