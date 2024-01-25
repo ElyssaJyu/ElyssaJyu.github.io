@@ -29,30 +29,28 @@ self.addEventListener('fetch', event => {
     }
 
     if (event.request.method === 'POST') {
-      event.respondWith((async () => {
-        try {
-          const cloneRequest = event.request.clone();
-          const textData = await cloneRequest.text();
-          console.log("------------------textData-------------", textData);
-          const formData = await event.request.formData();
-          var stringifiedFormData = "service-worker::fetch > event.formData() > entries:\r\n";
-          for (var entry of formData) {
-            stringifiedFormData += entry.toString() + "\r\n";
-            if (entry[1] instanceof File) {
-              tryReadFile(entry[1]);
-            }
-            if (entry[1] instanceof FileList) {
-              for (var file of entry[1]) {
-                tryReadFile(file);
-              }
+      try {
+        const cloneRequest = event.request.clone();
+        const textData = await cloneRequest.text();
+        console.log("------------------textData-------------", textData);
+        const formData = await event.request.formData();
+        var stringifiedFormData = "service-worker::fetch > event.formData() > entries:\r\n";
+        for (var entry of formData) {
+          stringifiedFormData += entry.toString() + "\r\n";
+          if (entry[1] instanceof File) {
+            tryReadFile(entry[1]);
+          }
+          if (entry[1] instanceof FileList) {
+            for (var file of entry[1]) {
+              tryReadFile(file);
             }
           }
-          console.debug(stringifiedFormData);
-        } catch (e) {
-          console.warn("service-worker::fetch > event.formData() failed: ", e);
         }
-        return fetch(event.request.url);
-      })());
+        console.debug(stringifiedFormData);
+      } catch (e) {
+        console.warn("service-worker::fetch > event.formData() failed: ", e);
+      }
+      return fetch(event.request.url);
     }
 
     function tryReadFile(file) {
