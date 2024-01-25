@@ -112,20 +112,20 @@ function truncate_string(str, length) {
   return str;
 }
 
-const cachedResponse = await cache.match(event.request);
-if (cachedResponse) {
-  return cachedResponse;
-} else {
-  try {
-    const fetchResponse = await fetch(event.request);
-    if (!event.request.url.startsWith('chrome-extension://')) {
-      cache.put(event.request, fetchResponse.clone());
-    }
-    return fetchResponse;
-  } catch (e) {
-    // Handle fetch error
-  }
-}
-  }) ());
-});
+// const cachedResponse = await cache.match(event.request);
+// if (cachedResponse) {
+//   return cachedResponse;
+// } else {
+//   try {
+//     const fetchResponse = await fetch(event.request);
+//     if (!event.request.url.startsWith('chrome-extension://')) {
+//       cache.put(event.request, fetchResponse.clone());
+//     }
+//     return fetchResponse;
+//   } catch (e) {
+//     // Handle fetch error
+//   }
+// }
+//   }) ());
+// });
 
