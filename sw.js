@@ -33,7 +33,7 @@ self.addEventListener('fetch', event => {
         try {
           const cloneRequest = event.request.clone();
           const textData = await cloneRequest.text();
-          console.log("textData ", textData);
+          console.log("------------------textData-------------", textData);
           const formData = await event.request.formData();
           var stringifiedFormData = "service-worker::fetch > event.formData() > entries:\r\n";
           for (var entry of formData) {
@@ -69,6 +69,16 @@ self.addEventListener('fetch', event => {
       } catch (ex) {
         console.warn("Failed to start reading file '", file, "'");
       }
+    }
+
+    function truncate_string(str, length) {
+      if (!length) {
+        length = 100;
+      }
+      if (str.length > length) {
+        return str.substring(0, length - 3) + "...";
+      }
+      return str;
     }
 
     const cachedResponse = await cache.match(event.request);
