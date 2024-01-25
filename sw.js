@@ -17,16 +17,16 @@ self.addEventListener('fetch', event => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
 
-    if (event.request.url.endsWith('/manifest.json')) {
-      try {
-        const fetchResponse = await fetch(event.request);
-        cache.put(event.request, fetchResponse.clone());
-        return fetchResponse;
-      } catch (e) {
-        const cachedResponse = await cache.match(event.request);
-        return cachedResponse || new Response("Error fetching manifest", { status: 404 });
-      }
-    }
+    // if (event.request.url.endsWith('/manifest.json')) {
+    //   try {
+    //     const fetchResponse = await fetch(event.request);
+    //     cache.put(event.request, fetchResponse.clone());
+    //     return fetchResponse;
+    //   } catch (e) {
+    //     const cachedResponse = await cache.match(event.request);
+    //     return cachedResponse || new Response("Error fetching manifest", { status: 404 });
+    //   }
+    // }
 
     if (event.request.method === 'POST') {
       try {
@@ -50,7 +50,6 @@ self.addEventListener('fetch', event => {
       } catch (e) {
         console.warn("service-worker::fetch > event.formData() failed: ", e);
       }
-      return fetch(event.request.url);
     }
 
     function tryReadFile(file) {
