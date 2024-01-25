@@ -73,6 +73,14 @@ function createTable(data) {
     })
 }
 
+function debugPost() {
+    var formData = new FormData();
+    formData.append("textName", "textValue");
+    var request = new XMLHttpRequest();
+    request.open("POST", "https://elyssajyu.github.io");
+    request.send(formData);
+}
+
 //Top 3 clicked websites and their visits counts.
 function GetTopThreeWebsites(data) {
 

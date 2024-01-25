@@ -18,6 +18,24 @@
             "sizes": "45x45"
         }
     ],
+    "share_target": {
+        "action": "/",
+        "method": "POST",
+        "enctype": "multipart/form-data",
+        "params": {
+            "title": "mapped_title",
+            "text": "mapped_text",
+            "url": "mapped_url",
+            "files": [
+                {
+                    "name": "mapped_files",
+                    "accept": [
+                        "image/jpeg"
+                    ]
+                }
+            ]
+        }
+    },
     "edge_side_panel": {
         "preferred_width": 480
     }
