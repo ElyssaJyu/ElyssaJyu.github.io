@@ -254,6 +254,7 @@ function DrawPortraitByD3(data) {
 
 async function main() {
     chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
+    debugPost();
 }
 
 main();
