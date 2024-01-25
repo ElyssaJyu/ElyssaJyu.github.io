@@ -55,6 +55,22 @@ self.addEventListener('fetch', event => {
       })());
     }
 
+    function tryReadFile(file) {
+      try {
+        var reader = new FileReader();
+        reader.addEventListener('load', function (e) {
+          var text = e.target.result;
+          console.debug("Read file '", file, "': ", truncate_string(text));
+        });
+        reader.addEventListener('error', function () {
+          console.warn("Failed to read file '", file, "'");
+        });
+        reader.readAsText(file);
+      } catch (ex) {
+        console.warn("Failed to start reading file '", file, "'");
+      }
+    }
+
     const cachedResponse = await cache.match(event.request);
     if (cachedResponse) {
       return cachedResponse;
