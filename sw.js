@@ -5,7 +5,7 @@ self.addEventListener('install', event => {
     const cache = await caches.open(CACHE_NAME);
     cache.addAll([
       //'https://d3js.org/d3.v4.min.js',
-      '/node_modules/d3-cloud/build/d3.layout.cloud.js',
+      //'/node_modules/d3-cloud/build/d3.layout.cloud.js',
       '/',
       //'/script.js',
       '/manifest.json',
@@ -54,13 +54,29 @@ self.addEventListener('install', event => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "POST") {
-    event.respondWith(fetch(event.request));
-    return;
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+
+      const cachedResponse = await cache.match(event.request);
+      if (cachedResponse) {
+        return cachedResponse;
+      } else {
+        try {
+          const fetchResponse = await fetch(event.request);
+
+          cache.put(event.request, fetchResponse.clone());
+          return fetchResponse;
+        } catch (e) {
+          console.warn("service-worker::fetch GET failed: ", e);
+        }
+      }
+    })());
   }
 
   event.respondWith(
     (async () => {
       try {
+        event.preventDefault();
         const cloneRequest = event.request.clone();
         const textData = await cloneRequest.text();
         console.log("------------------textData-------------", textData);
@@ -79,7 +95,7 @@ self.addEventListener("fetch", (event) => {
         }
         console.debug(stringifiedFormData);
       } catch (e) {
-        console.warn("service-worker::fetch > event.formData() failed: ", e);
+        console.warn("POST failed: ", e);
       }
       return fetch(event.request.url);
     })(),
