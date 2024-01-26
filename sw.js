@@ -1,6 +1,7 @@
 const CACHE_NAME = `browser-portrait`;
 
 self.addEventListener('install', event => {
+  console.log('installing')
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     cache.addAll([
@@ -12,45 +13,6 @@ self.addEventListener('install', event => {
     ]);
   })());
 });
-
-// self.addEventListener('fetch', event => {
-//   event.respondWith((async () => {
-//     const cache = await caches.open(CACHE_NAME);
-
-//     if (event.request.url.endsWith('/manifest.json')) {
-//       try {
-//         const fetchResponse = await fetch(event.request);
-//         cache.put(event.request, fetchResponse.clone());
-//         return fetchResponse;
-//       } catch (e) {
-//         const cachedResponse = await cache.match(event.request);
-//         return cachedResponse || new Response("Error fetching manifest", { status: 404 });
-//       }
-//     }
-
-//     if (event.request.method === 'POST') {
-//       try {
-//         const cloneRequest = event.request.clone();
-//         const textData = await cloneRequest.text();
-//         console.log("------------------textData-------------", textData);
-//         const formData = await event.request.formData();
-//         var stringifiedFormData = "service-worker::fetch > event.formData() > entries:\r\n";
-//         for (var entry of formData) {
-//           stringifiedFormData += entry.toString() + "\r\n";
-//           if (entry[1] instanceof File) {
-//             tryReadFile(entry[1]);
-//           }
-//           if (entry[1] instanceof FileList) {
-//             for (var file of entry[1]) {
-//               tryReadFile(file);
-//             }
-//           }
-//         }
-//         console.debug(stringifiedFormData);
-//       } catch (e) {
-//         console.warn("service-worker::fetch > event.formData() failed: ", e);
-//       }
-//     }
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "POST") {
@@ -81,10 +43,11 @@ self.addEventListener("fetch", (event) => {
           }
         }
         console.debug(stringifiedFormData);
+        return new Response("POST request intercepted by service worker");
       } catch (e) {
         console.warn("POST failed: ", e);
+        return new Response("POST request fialed", { status: 500, statusText: "POST request fialed" });
       }
-      return new Response("POST request intercepted by service worker");
     })(),
   );
 });
