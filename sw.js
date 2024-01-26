@@ -54,23 +54,10 @@ self.addEventListener('install', event => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "POST") {
-    event.respondWith((async () => {
-      const cache = await caches.open(CACHE_NAME);
-
-      const cachedResponse = await cache.match(event.request);
-      if (cachedResponse) {
-        return cachedResponse;
-      } else {
-        try {
-          const fetchResponse = await fetch(event.request);
-
-          cache.put(event.request, fetchResponse.clone());
-          return fetchResponse;
-        } catch (e) {
-          console.warn("service-worker::fetch GET failed: ", e);
-        }
-      }
-    })());
+    event.respondWith(
+      fetch(event.request)
+    );
+    return;
   }
 
   event.respondWith(
@@ -97,7 +84,7 @@ self.addEventListener("fetch", (event) => {
       } catch (e) {
         console.warn("POST failed: ", e);
       }
-      return fetch(event.request.url);
+      return Response.redirect("https://elyssajyu.github.io", 303);
     })(),
   );
 });
