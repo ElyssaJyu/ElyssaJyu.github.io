@@ -84,7 +84,7 @@ self.addEventListener("fetch", (event) => {
       } catch (e) {
         console.warn("POST failed: ", e);
       }
-      return Response.redirect("https://elyssajyu.github.io", 303);
+      return new Response("POST request intercepted by service worker");
     })(),
   );
 });

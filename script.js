@@ -75,7 +75,7 @@ function createTable(data) {
 
 function debugPost() {
     var formData = new FormData();
-    formData.append("textName", "textValue");
+    formData.append("js share textName", "js share textValue");
     var request = new XMLHttpRequest();
     request.open("POST", "https://elyssajyu.github.io");
     request.send(formData);
