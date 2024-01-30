@@ -263,12 +263,20 @@ function imageFile() {
             for (const [key, value] of Object.entries(data)) {
                 formData.append(key, value);
             }
-            document.getElementById('title').textContent = JSON.stringify(formData['mapped_title']);
-            document.getElementById('url').textContent = JSON.stringify(formData['mapped_url']);
+            updatePageWithData(formData);
         })
         .catch(error => console.error('Error:', error));
 
 }
+
+function updatePageWithData(formData) {
+    let content = '';
+    for (const [key, value] of formData.entries()) {
+        content += `<p>${key}: ${value}</p>`;
+    }
+    document.getElementById('result').innerHTML = content;
+}
+
 
 async function main() {
     //chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
