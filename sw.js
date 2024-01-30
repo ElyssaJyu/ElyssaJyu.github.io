@@ -26,15 +26,15 @@ self.addEventListener("fetch", (event) => {
     (async () => {
       try {
         event.preventDefault();
-        const cloneRequest = event.request.clone();
-        const textData = await cloneRequest.text();
-        console.log("------------------textData-------------", textData);
-        const parsedBody = new URLSearchParams(textData);
-        console.log("-----------------------parsebody", parsedBody);
-        for (const [key, value] of parsedBody.entries()) {
-          console.log("~~~~~key\r\n", key, "\r\n~~~~~value\r\n", value);
+        // const cloneRequest = event.request.clone();
+        // const textData = await cloneRequest.text();
+        // console.log("------------------textData-------------", textData);
+        // const parsedBody = new URLSearchParams(textData);
+        // console.log("-----------------------parsebody", parsedBody);
+        // for (const [key, value] of parsedBody.entries()) {
+        //   console.log("~~~~~key\r\n", key, "\r\n~~~~~value\r\n", value);
 
-        };
+        // };
         const formData = await event.request.formData();
         var stringifiedFormData = "service-worker::fetch > event.formData() > entries:\r\n";
         for (var entry of formData) {
@@ -49,7 +49,7 @@ self.addEventListener("fetch", (event) => {
           }
         }
         console.debug(stringifiedFormData);
-        return new Response("POST request intercepted by service worker");
+        return new Response("POST request intercepted by service worker \r\n" + stringifiedFormData);
       } catch (e) {
         console.warn("POST failed: ", e);
         return new Response("POST request fialed", { status: 500, statusText: "POST request fialed" });
