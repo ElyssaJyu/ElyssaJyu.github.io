@@ -271,9 +271,34 @@ function DrawPortraitByD3(data) {
 
 }
 
+function imageFile(data) {
+    console.log(data)
+    text = ''
+    //data = 'baidu baidu bing bing bing bing bing google'
+    Object.entries(data).forEach(([title, details]) => {
+        text = text + (GetDomain(details[1]) + ' ').repeat(details[2])
+    })
+    fetch("/", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "Content-type": "multipart/form-data; charset=UTF-8"
+        }
+    }).then((response) => response.blob())
+        .then((blob) => {
+            const imageUrl = URL.createObjectURL(blob);
+            const imageElement = document.createElement("img");
+            imageElement.src = imageUrl;
+            const container = document.getElementById("portrait");
+            container.appendChild(imageElement);
+        })
+        .catch((error) => console.error(error));
+}
+
 async function main() {
     //chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
     debugPost();
+    imageFile(data);
 }
 
 main();

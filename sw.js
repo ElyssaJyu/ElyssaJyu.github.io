@@ -8,7 +8,7 @@ self.addEventListener('install', event => {
       //'https://d3js.org/d3.v4.min.js',
       //'/node_modules/d3-cloud/build/d3.layout.cloud.js',
       '/',
-      //'/script.js',
+      '/script.js',
       '/manifest.json',
     ]);
   })());
@@ -49,8 +49,8 @@ self.addEventListener("fetch", (event) => {
         //   }
         // }
         // console.debug(stringifiedFormData);
-        // const title = formData.getAll('mapped_title');
-        // const url = formData.getAll('mapped_url');
+        const title = formData.getAll('mapped_title');
+        const url = formData.getAll('mapped_url');
         const image = formData.getAll('mapped_files');
         // return new Response("POST request intercepted by service worker \r\n" + stringifiedFormData);
       } catch (e) {
@@ -60,6 +60,12 @@ self.addEventListener("fetch", (event) => {
       return fetch(event.request.url);
     })(),
   );
+});
+
+self.clients.matchAll().then(clients => {
+  clients.forEach(client => {
+    client.postMessage({ formData: formData });
+  });
 });
 
 
