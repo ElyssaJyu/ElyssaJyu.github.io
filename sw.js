@@ -53,16 +53,11 @@ self.addEventListener("fetch", (event) => {
         // const url = formData.getAll('mapped_url');
         const image = formData.getAll('mapped_files');
         // return new Response("POST request intercepted by service worker \r\n" + stringifiedFormData);
-        return new Response(image, {
-          headers: {
-            'content-length': image.size,
-            'content-type': image.type,
-          },
-        })
       } catch (e) {
         console.warn("POST failed: ", e);
         return new Response("POST request fialed", { status: 500, statusText: "POST request fialed" });
       }
+      return fetch(event.request.url);
     })(),
   );
 });
