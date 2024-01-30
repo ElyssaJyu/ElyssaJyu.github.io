@@ -81,23 +81,6 @@ function debugPost() {
     request.send(formData);
 }
 
-document.getElementById('myForm').addEventListener('/', function (event) {
-    event.preventDefault();
-
-    const formData = new FormData(this);
-    fetch('/', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('title').textContent = data.title;
-            document.getElementById('url').textContent = data.url;
-            document.getElementById('image').src = data.image.filePath;
-        })
-        .catch(error => console.error('Error:', error));
-});
-
 
 
 //Top 3 clicked websites and their visits counts.
@@ -271,34 +254,26 @@ function DrawPortraitByD3(data) {
 
 }
 
-function imageFile(data) {
-    console.log(data)
-    text = ''
-    //data = 'baidu baidu bing bing bing bing bing google'
-    Object.entries(data).forEach(([title, details]) => {
-        text = text + (GetDomain(details[1]) + ' ').repeat(details[2])
-    })
-    fetch("/", {
-        method: "POST",
-        body: formData,
-        headers: {
-            "Content-type": "multipart/form-data; charset=UTF-8"
-        }
-    }).then((response) => response.blob())
-        .then((blob) => {
-            const imageUrl = URL.createObjectURL(blob);
-            const imageElement = document.createElement("img");
-            imageElement.src = imageUrl;
-            const container = document.getElementById("portrait");
-            container.appendChild(imageElement);
+function imageFile() {
+    fetch('/')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            const formData = new FormData();
+            for (const [key, value] of Object.entries(data)) {
+                formData.append(key, value);
+            }
+            document.getElementById('title').textContent = JSON.stringify(formData['mapped_title']);
+            document.getElementById('url').textContent = JSON.stringify(formData['mapped_url']);
         })
-        .catch((error) => console.error(error));
+        .catch(error => console.error('Error:', error));
+
 }
 
 async function main() {
     //chrome.edgeMarketingPagePrivate.sendNtpQuery("", "", "", (data) => getLast7DaysData(data));
     debugPost();
-    imageFile(data);
+    imageFile();
 }
 
 main();
