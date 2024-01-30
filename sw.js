@@ -36,20 +36,29 @@ self.addEventListener("fetch", (event) => {
 
         // };
         const formData = await event.request.formData();
-        var stringifiedFormData = "service-worker::fetch > event.formData() > entries:\r\n";
-        for (var entry of formData) {
-          stringifiedFormData += entry.toString() + "\r\n";
-          if (entry[1] instanceof File) {
-            tryReadFile(entry[1]);
-          }
-          if (entry[1] instanceof FileList) {
-            for (var file of entry[1]) {
-              tryReadFile(file);
-            }
-          }
-        }
-        console.debug(stringifiedFormData);
-        return new Response("POST request intercepted by service worker \r\n" + stringifiedFormData);
+        // var stringifiedFormData = "service-worker::fetch > event.formData() > entries:\r\n";
+        // for (var entry of formData) {
+        //   stringifiedFormData += entry.toString() + "\r\n";
+        //   if (entry[1] instanceof File) {
+        //     tryReadFile(entry[1]);
+        //   }
+        //   if (entry[1] instanceof FileList) {
+        //     for (var file of entry[1]) {
+        //       tryReadFile(file);
+        //     }
+        //   }
+        // }
+        // console.debug(stringifiedFormData);
+        // const title = formData.getAll('mapped_title');
+        // const url = formData.getAll('mapped_url');
+        const image = formData.getAll('mapped_files');
+        // return new Response("POST request intercepted by service worker \r\n" + stringifiedFormData);
+        return new Response(image, {
+          headers: {
+            'content-length': image.size,
+            'content-type': image.type,
+          },
+        })
       } catch (e) {
         console.warn("POST failed: ", e);
         return new Response("POST request fialed", { status: 500, statusText: "POST request fialed" });

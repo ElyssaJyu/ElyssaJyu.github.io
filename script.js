@@ -42,7 +42,7 @@ async function getLast7DaysData(data) {
 //         const parts = match[2].split('.');
 //         if (parts.length > 1) {
 //             return parts[parts.length - 2];
-//         }
+//         } 
 //     }
 //     return null;
 // }
@@ -80,6 +80,25 @@ function debugPost() {
     request.open("POST", "https://elyssajyu.github.io");
     request.send(formData);
 }
+
+document.getElementById('myForm').addEventListener('/', function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    fetch('/', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('title').textContent = data.title;
+            document.getElementById('url').textContent = data.url;
+            document.getElementById('image').src = data.image.filePath;
+        })
+        .catch(error => console.error('Error:', error));
+});
+
+
 
 //Top 3 clicked websites and their visits counts.
 function GetTopThreeWebsites(data) {
