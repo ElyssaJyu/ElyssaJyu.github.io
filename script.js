@@ -272,6 +272,11 @@ function imageFile() {
 function updatePageWithData(formData) {
     let content = '';
     for (const [key, value] of formData.entries()) {
+        if (key === 'mapped_files' && value instanceof Blob) {
+            console.log(value);
+            const imageUrl = URL.createObjectURL(value.filepath);
+            content += `<img src="${imageUrl}" />`;
+        }
         content += `<p>${key}: ${value}</p>`;
     }
     document.getElementById('result').innerHTML = content;

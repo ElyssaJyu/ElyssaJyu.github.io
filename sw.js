@@ -52,7 +52,7 @@ self.addEventListener("fetch", (event) => {
         const title = formData.getAll('mapped_title');
         const url = formData.getAll('mapped_url');
         const image = formData.getAll('mapped_files');
-        return new Response(JSON.stringify(formData), { headers: { 'Content-Type': 'multipart/form-data' } });
+        return new Response(JSON.stringify(formData), { headers: { 'Content-Type': 'application/json' } });
       } catch (e) {
         console.warn("POST failed: ", e);
         return new Response("POST request fialed", { status: 500, statusText: "POST request fialed" });
